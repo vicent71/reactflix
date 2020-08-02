@@ -5,12 +5,12 @@ import './index.css';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import CadastroVideo from './pages/cadastro/Video';
-import CadastroCategoria from './pages/cadastro/Categoria';
+import CadastroCategoria from './pages/cadastro/Categoria/Categoria';
 
-
+// Desafio master blaster na descrição
 const Pagina404 = () => (<div>Página 404</div>)
 
-ReactDOM.render( //Switch faz o papel do if
+ReactDOM.render(
   <BrowserRouter>
     <Switch>
       <Route path="/" component={Home} exact />
@@ -18,8 +18,6 @@ ReactDOM.render( //Switch faz o papel do if
       <Route path="/cadastro/categoria" component={CadastroCategoria} />
       <Route component={Pagina404} />
     </Switch>
-
   </BrowserRouter>,
   document.getElementById('root')
 );
-

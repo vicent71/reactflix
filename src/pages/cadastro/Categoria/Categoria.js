@@ -3,65 +3,51 @@ import { Link } from 'react-router-dom';
 import PageDefault from '../../../components/PageDefault';
 import FormField from '../../../components/FormField';
 import Button from '../../../components/Button';
+import useForm from '../../../hooks/useForm';
 
 function CadastroCategoria() {
   const valoresIniciais = {
     nome: '',
     descricao: '',
     cor: '',
-  }
+  };
+
+  const { handleChange, values, clearForm } = useForm(valoresIniciais);
+
   const [categorias, setCategorias] = useState([]);
-  const [values, setValues] = useState(valoresIniciais);
-
-
-  function setValue(chave, valor) {
-    // chave: nome, descricao
-    setValues({
-      ...values,
-      [chave]: valor, // nome: 'valor'
-    })
-  }
-
-  function handleChange(infosDoEvento) {
-    setValue(
-      infosDoEvento.target.getAttribute('name'),
-      infosDoEvento.target.value
-    );
-  }
-
-  // ============
 
   useEffect(() => {
-    if (window.location.href.includes('localhost')) {
-      const URL = 'http://localhost:8080/categorias';
-      fetch(URL)
-        .then(async (respostaDoServer) => {
-          if (respostaDoServer.ok) {
-            const resposta = await respostaDoServer.json();
-            setCategorias(resposta);
-            return;
-          }
-          throw new Error('Não foi possível pegar os dados');
-        })
-    }
+    const URL_TOP = window.location.hostname.includes('localhost')
+      ? 'http://localhost:8080/categorias'
+      : 'https://viflix.herokuapp.com/categorias';
+    fetch(URL_TOP)
+      .then(async (respostaDoServidor) => {
+        const resposta = await respostaDoServidor.json();
+        setCategorias([
+          ...resposta,
+        ]);
+      });
   }, []);
 
   return (
     <PageDefault>
-      <h1>Cadastro de Categoria: {values.nome}</h1>
+      <h1>
+        Cadastro de Categoria:
+        {values.nome}
+      </h1>
 
       <form onSubmit={function handleSubmit(infosDoEvento) {
         infosDoEvento.preventDefault();
-
         setCategorias([
           ...categorias,
-          values
+          values,
         ]);
 
-        setValues(valoresIniciais)
-      }}>
+        clearForm();
+      }}
+      >
 
-<FormField
+        <FormField
           label="Nome da Categoria"
           name="nome"
           value={values.nome}
@@ -90,13 +76,13 @@ function CadastroCategoria() {
       </form>
 
       {categorias.length === 0 && (
-        < div >
-        {/*Carregando*/ }
-        Loading...
-      </div>
+        <div>
+          {/* Cargando... */}
+          Loading...
+        </div>
       )}
 
-<ul>
+      <ul>
         {categorias.map((categoria) => (
           <li key={`${categoria.titulo}`}>
             {categoria.titulo}
@@ -104,11 +90,11 @@ function CadastroCategoria() {
         ))}
       </ul>
 
-  <Link to="/">
-    Ir para home
+      <Link to="/">
+        Ir para home
       </Link>
-    </PageDefault >
-  )
+    </PageDefault>
+  );
 }
 
 export default CadastroCategoria;
